@@ -1,0 +1,26 @@
+.container {
+  height: 100vh;
+  display: block;
+  text-align: center;
+  margin-top: 85px;
+}
+
+.completed {
+    text-decoration: line-through;
+    color: red;
+} 
+
+ ul {
+  list-style: none;
+  padding: 0;
+} 
+
+li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f2f2f2;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  border-radius: 5px;
+}
