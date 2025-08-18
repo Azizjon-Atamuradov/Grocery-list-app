@@ -28,23 +28,25 @@ const List = () => {
   const startEdit = (index) => {
     setEditIndex(index);
     setEditValue(lists[index].text);
-      
   };
 
-    const saveEdit = (index) => {
-         if (editValue.trim() === "") return;
+  const saveEdit = (index) => {
+    if (editValue.trim() === "") return;
     const updatedList = lists.map((item, i) =>
-      i === index ? { ...item, text: editValue} : item
-      );
-    setLists(updatedList)
+      i === index ? { ...item, text: editValue } : item
+    );
+    setLists(updatedList);
     setEditIndex(null);
     setEditValue("");
-      
   };
 
   const cancelEdit = () => {
     setEditIndex(null);
     setEditValue("");
+  };
+
+  const handleDeleteAll = () => {
+    setLists([]);
   };
 
   return (
@@ -80,30 +82,29 @@ const List = () => {
                   value={editValue}
                   onChange={(e) => setEditValue(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter") saveEdit(editValue);
-                    else if (e.key === "Escape") cancelEdit();
+                    if (e.key === "Enter") saveEdit(index);
+                    if (e.key === "Escape") cancelEdit();
                   }}
                 />
-                
+
                 <button onClick={() => saveEdit(index)}>Save</button>
                 <button onClick={cancelEdit}>Cancel</button>
               </>
             ) : (
               <>
-                <span>{list.text}</span>
-                <button onClick={() => startEdit(index)}>Edit</button>
-                <button onClick={() => handleDelete(index)}>❌</button>
+                <>
+                  <span>{list.text}</span>
+                  <button onClick={() => startEdit(index)}>Edit</button>
+                  <button onClick={() => handleDelete(index)}>❌</button>
+                </>
               </>
             )}
           </li>
         ))}
       </ul>
+        { lists.length > 1 ?   <button onClick={handleDeleteAll}>Delete All</button> : null   }   
     </div>
   );
 };
 
 export default List;
-
-
-
-
