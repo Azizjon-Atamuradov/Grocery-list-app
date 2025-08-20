@@ -24,3 +24,11 @@ li {
   margin-bottom: 8px;
   border-radius: 5px;
 }
+
+.inputField {
+  margin: 15px;
+}
+
+.sortItems {
+  margin: 15px;
+}

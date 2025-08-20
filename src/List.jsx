@@ -6,10 +6,11 @@ const List = () => {
   const [lists, setLists] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
   const [editValue, setEditValue] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleSubmit = () => {
     if (inputValue.trim() === "") return;
-    setLists([...lists, { text: inputValue, completed: false }]);
+    setLists([...lists, { text: inputValue.trim(), completed: false }]);
     setInputValue("");
   };
 
@@ -49,9 +50,27 @@ const List = () => {
     setLists([]);
   };
 
+  const sortAlphabatecally = () => {
+    if (editIndex !== null) return;
+
+    setLists((prev) =>
+      [...prev].sort((a, b) =>
+        a.text.localeCompare(b.text, undefined, {
+          sensitivity: "base",
+          numeric: true,
+        })
+      )
+    );
+  };
+
+  const filteredLists = lists.filter((item) =>
+    item.text.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="container">
       <h1>Grocery Shopping List</h1>
+
       <div className="inputField">
         <input
           type="text"
@@ -66,43 +85,79 @@ const List = () => {
         />
         <button onClick={() => handleSubmit()}>Add</button>
       </div>
+
+      <div className="sortItems">
+        <button
+          onClick={sortAlphabatecally}
+          disabled={lists.length < 2 || editIndex !== null}
+        >
+          Sort Items A➡️Z
+        </button>
+      </div>
+
+      <div className="searchField">
+        <input
+          type="text"
+          value={searchTerm}
+          placeholder="Search items ..."
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+
       <ul>
-        {lists.map((list, index) => (
-          <li key={index} className={list.completed ? "completed" : ""}>
-            <input
-              type="checkbox"
-              checked={list.completed}
-              onChange={() => toggleComplete(index)}
-            />
+        {filteredLists.length > 0
+          ? filteredLists.map((list, index) => {
+              const originalIndex = lists.indexOf(list);
 
-            {editIndex === index ? (
-              <>
-                <input
-                  type="text"
-                  value={editValue}
-                  onChange={(e) => setEditValue(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") saveEdit(index);
-                    if (e.key === "Escape") cancelEdit();
-                  }}
-                />
+              return (
+                <li
+                  key={originalIndex}
+                  className={list.completed ? "completed" : ""}
+                >
+                  <input
+                    type="checkbox"
+                    checked={list.completed}
+                    onChange={() => toggleComplete(originalIndex)}
+                  />
 
-                <button onClick={() => saveEdit(index)}>Save</button>
-                <button onClick={cancelEdit}>Cancel</button>
-              </>
-            ) : (
-              <>
-                <>
-                  <span>{list.text}</span>
-                  <button onClick={() => startEdit(index)}>Edit</button>
-                  <button onClick={() => handleDelete(index)}>❌</button>
-                </>
-              </>
+                  {editIndex === originalIndex ? (
+                    <>
+                      <input
+                        type="text"
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") saveEdit(originalIndex);
+                          if (e.key === "Escape") cancelEdit();
+                        }}
+                      />
+
+                      <button onClick={() => saveEdit(originalIndex)}>
+                        Save
+                      </button>
+                      <button onClick={cancelEdit}>Cancel</button>
+                    </>
+                  ) : (
+                    <>
+                      <span>{list.text}</span>
+                      <button onClick={() => startEdit(originalIndex)}>
+                        Edit
+                      </button>
+                      <button onClick={() => handleDelete(originalIndex)}>
+                        ❌
+                      </button>
+                    </>
+                  )}
+                </li>
+              );
+            })
+          : searchTerm.length > 0 && (
+              <li className="not-found">❌ No items found</li>
             )}
-          </li>
-        ))}
       </ul>
-        { lists.length > 1 ?   <button onClick={handleDeleteAll}>Delete All</button> : null   }   
+      {lists.length > 1 ? (
+        <button onClick={handleDeleteAll}>Delete All</button>
+      ) : null}
     </div>
   );
 };
